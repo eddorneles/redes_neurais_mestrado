@@ -1,0 +1,10 @@
+function[] = start_run()
+    load('dataset_training.mat');
+    eta_center_learning = 0.05;
+    eta_weight_learning_ratio = 0.05;
+    
+    epochs = 1000;
+    for num_hidden = 4 : 12
+        weights = rbf_sin( dataset_training, num_hidden, eta_center_learning, epochs );
+    end % for
+end

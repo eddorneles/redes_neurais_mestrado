@@ -1,8 +1,8 @@
-function[] = start()
+function [] = start_run()
     interval_zero_2pi = 2 * pi * rand( 1, 10000 );
-    save( 'interval_zero_2pi.mat'k
+    save( 'dataset.mat');
     
-    [training_set, test_set] = divideblock( interval_zero, 0.7, 0.3, 0 );
+    [training_set, test_set] = divideblock( interval_zero_2pi, 0.7, 0.3, 0 );
 
 
 end
