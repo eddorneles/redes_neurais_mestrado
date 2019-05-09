@@ -1,43 +1,99 @@
-function [  ] = rbf_sin ( input_x, hidden_neurons, learning_ratio_eta, epochs )
-    input_neurons = 1;
+%%
+% -> input_x is the training dataset, rows must be instances and columns must 
+%       be features;
+% hidden
+function [  ] = rbf_sin ( input_x, num_hidden_neurons, center_learning_ratio, epochs )
+    num_instances, num_input_neurons = size(input_x);
     
     epochs = 1000;
-    learning_ratio_eta = 0.05;
+    center_learning_ratio = 0.05;
     
-    input = normalize( input_x )
-   
-    neuron_centres = rand( hidden, input_neurons ) - 0.5;
+    x = normalize_data( input_x );
+    centers = compute_centers( x, num_hidden_neurons, center_learning_ratio );
+    sigma = compute_siga( centers );
     
-    % centers computation
-    min_distances = zeros( input_size );
-    for i = input_size
-        % closest center to input(i) computation
-        [diff_value, closest_center_index] = ... 
-            min( sqrt( (input_x(i) - neuron_centres ).^2 ) )
+end %function rbf_sin
 
-        %atualizar centro
-        neuron_centres( closest_center_index ) = ...
-            neuron_centres( closest_center_index ) + ...
-            eta * ( input_x(i) - neuron_centres(closest_center_index) );
-        %neuron_centers = neuron_centers + eta
-        min_distances(i) = diff_value;
+function [] = compute_weights( x, centers, sigma, error, eta_learning_rate )
+    num_instances = size( x, 1 );
+    num_hidden_neurons = size(center,1);
+    out_hidden_neurons = zeros( num_instances, num_hidden_neurons );
+    for i = 1 : num_instances
+        mi = euclidian_distance( x(i), centers ); %vetor com todas as distâncias
+        exp( -1 * mi^^ )
     end
 end
 
-function [ normalized_x ] = normalize( x )
-    min_x = min(x);
-    max_x = max(x);
-    normalized_x = ( 2 * input_x - max_x - min_x ) / max_x - min_x;
+%% centers_computation
+% x must be normalized. rows must be instances and columns must be features
+function [neuron_centers] = compute_centers( x, num_hidden_neurons, eta_learning_rate )
+    [num_instances, num_input_neurons] = size(x,1);
+    
+    %initialize centers
+    neuron_centers = rand( num_hidden_neurons, num_input_neurons ) - 0.5;
+    
+    min_distances = zeros( num_instances );
+    quantization_error = 9999999;
+    while quantization_error >= 0.1
+        for i = 1 : num_instances
+            % find closest center, algorithm "win takes all"
+            distances = euclidian_distance( x(i), neuron_centers );
+            [min_distance, closest_center_index] = min( distances );
+            min_distances(i) = min_distance;
+            % update closest center
+            neuron_centers( closest_center_index ) = neuron_centers( closest_center_index ) + ...
+                eta_learning_rate * ( x(i) - neuro );
+        end %for
+        % quantization_error computation
+        quantization_error = sum( min_distances .^ 2 ) / num_instances;
+    end %while
+end %function compute_center
+
+function [ normalized_x ] = normalize_data( x )
+    num_instances = size( x, 2 );
+    normalized_x = x;
+    for j = 1 : num_instances
+        max_x = max( x( :, j ) );
+        min_x = min( x( :, j ) );
+        normalized_x(:,j) = ( 2 * x(:,j) - max_x - min_x ) / ( max_x - min_x );
+    end
+end
+
+%% OBS: For this application 
+% x is a row matrix (each column means an attribute value)
+% y is a matrix where each row is an element and each means an attribute 
+% Returns a column matrix of distances
+function [distance] = euclidian_distance( x, y )
+    col_dim = 2;
+    distance = sqrt( sum( ( x - y ).^ 2, col_dim ) );
+end
+
+%%
+%{
+sigma is computed for each center (hidden neuron)
+-> neuron_centers is a matrix where 
+    rows number are the same as hidden_neurons number and
+    columns number are the same as input_neurons number
+%} 
+
+function [sigma] = compute_sigma( neuron_centers )
+    %initialize sigma
+    num_neuron_centers = size( 1, neuron_centers );
+    sigma = zeros( num_neuron_centers );
+    for i = 1 : num_neuron_centers
+        aux_neuron_centers = neuron_centers;
+        aux_neuron_centers(i) = []; % remove the i element
+        sigma(i) = min( euclidian_distance( neuron_centers(i), aux_neuron_centers ) )/2;
+    end %for
 end
 
 function [ result ] = gaussian( input_x, neuron_centres )
-    squared_distance = ( input_x - neuron_centres ) .^2;
-    sigma = zeros()
-    %compute sigma and get the neuron 
-    for i = size( neuron_centres, 1 )
-        aux_neuron_centres = neuron_centres;
-        aux_neuron_centres(i) = []; % remove the i element
-        [sigma(i), closest_centre_index ] = min( abs( neuron_centres(i) - neuron_centres ) );
-    end %for
+    sigma_divisor = 2 * sigma_computation( neuron_centres ) .^ 2;
+    %compute sigma and get the neuron
+    squared_distance = ( input_x - neuron_centres );
     exp( - squared_distance / );
+end
+
+function [result] = gaussian_rbf( x, center, std_dev )
+    result = exp( -1 / ( 2 * s .^ 2 ) * ( x - center ) );
 end
