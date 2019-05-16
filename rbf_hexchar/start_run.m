@@ -4,8 +4,8 @@ function[] = start_run()
     eta_weight_learning_ratio = 0.05;
     
     epochs = 1000;
-    a = [1,2,3;]
-    weights = rbf_sin( dataset_training, 4, ...
+    a = [12,1,2.5,7.32;6,5,4,7];
+    weights = rbf_sin( a, 5, ...
         eta_center_learning, epochs, eta_weight_learning_ratio );
     
 end

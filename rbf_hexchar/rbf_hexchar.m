@@ -17,16 +17,17 @@ end %function rbf_sin
 function [out_hidden_neurons, weights] = compute_weights( x, centers, sigma, num_output_neurons, epochs, expected_error, weight_learning_ratio )
     num_instances = size( x, 2 );
     num_hidden_neurons = size( centers, 2 );
+    %% calculo da saída de cada neuronio escondido para cada padrao de entrada
     out_hidden_neurons = zeros( num_hidden_neurons, num_instances ); % rows: input_x; columns: hidden_neuron
     for j = 1 : num_instances
         mi = euclidian_distance( x(:,j), centers ); %vetor com as distancias de x(i) a cada um dos centros
         out_hidden_neurons(:,j) = exp( ( -1 * mi.^2 ) ./ (2*sigma.^2) )'; % saida de cada neuronio oculto para x(j)
     end %for
 
-    %% Atualizacao dos pesos
+    %% Atualizacao dos pesos TERMINAR A CORRECAO 
     expected_error = 0.005;
     current_epoch = 1;
-    net_output = zeros( num_instances, num_output_neurons );    
+    net_output = ones( num_output_neurons, num_instances );
     weights = rand( num_output_neurons, num_hidden_neurons ); %inicializa os pesos aleatoriamente
     k = 1;
 
@@ -34,7 +35,7 @@ function [out_hidden_neurons, weights] = compute_weights( x, centers, sigma, num
     error_m = 99999999;
     while error_m > expected_error && current_epoch < epochs
         for j = 1 : num_instances
-            net_output(j,:) = net_output(j,:) * weights ;
+            net_output(j,:) = net_output(j,:) * weights;
         end %for
         net_output = k .* net_output;
         error_m = abs(sin_values - net_output);
